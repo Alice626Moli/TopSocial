@@ -25,6 +25,8 @@ const express = require('express')
 const cors = require('cors')
 
 const router = require('./routes/index')
+
+const {handleErrors} = require('./middleware/errorMiddleware')
 const app = express()
 // 创建web server
 
@@ -40,7 +42,12 @@ app.use(cors())
 app.use(express.json())
 // 解析body数据，防止cors undefined问题,全局中间件
 
-app.use('/api',router)
+
+// 这里进入api网址挂载之类的
+app.use('/api',router) 
+
+// use error middleware at the end
+app.use(handleErrors)
 
 
 

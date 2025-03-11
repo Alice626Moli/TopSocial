@@ -24,7 +24,7 @@ const axios = require('axios')
 
 
 const USER_PROFILES_API_URL = 'http://localhost:8000/userProfiles'
-const getUserProfileById = async function(req,res){
+const getUserProfileById = async function(req,res,next){
     console.log('userPosts',req.params.userId)
     const id = req.params.userId
     if(!id){
@@ -38,17 +38,59 @@ const getUserProfileById = async function(req,res){
         })
     }
     catch (error){
-        console.error(error)
-        res.status(500).json({
-            error:'Failed to fetch user profile'
-        })
+        next (error)
+        }
+    }
+
+
+
+
+const getUserProfiles = async function(req,res,next){
+    console.log('getUserProfiles Succeeded')
+try {
+    const response = await axios.get(USER_PROFILES_API_URL)
+    const userProfiles = response.data
+    res.status(200).json({
+        msg:"Get userProfiles succeeded",
+        data:userProfiles
+    })
+    } catch(error){
+        next (error)
     }
 
 }
 
+const patchUserProfilesById = async function(req,res,next){
+    console.log('patchUserProfilesById 成功')
+    const id = req.params.userId
+    if(!id){
+        return res.status(400).send('Id is required')
+    }
+
+    const newUserProfileData = req.body
+    try{
+        const response = await axios.patch(`${USER_PROFILES_API_URL}/${id}`,
+            newUserProfileData
+        ) 
+
+        const updateUserProfile = response.data
+        res.status(200).json({
+            msg:"Update user profile succeeded",
+            data:updateUserProfile
+        })
+
+    }
+
+    catch(error){
+        next (error)
+    }
+}
 
 
-module.exports = {getUserProfileById}
+
+
+module.exports = {getUserProfileById,getUserProfiles,
+    patchUserProfilesById}
 
 
 
